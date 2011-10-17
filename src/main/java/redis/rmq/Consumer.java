@@ -9,6 +9,7 @@ public class Consumer {
     private Nest topic;
     private Nest subscriber;
     private String id;
+    private long sleepTime = 500;
 
     public Consumer(final Jedis jedis, final String id, final String topic) {
         this.topic = new Nest("topic:" + topic, jedis);
@@ -16,12 +17,16 @@ public class Consumer {
         this.id = id;
     }
 
+    public void setSleepTime(long sleepTime){
+        this.sleepTime = sleepTime;
+    }
+
     private void waitForMessages() {
         try {
             // TODO el otro metodo podria hacer q no se consuman mensajes por un
             // tiempo si no llegan, de esta manera solo se esperan 500ms y se
             // controla que haya mensajes.
-            Thread.sleep(500);
+            Thread.sleep(sleepTime);
         } catch (InterruptedException e) {
         }
     }
@@ -87,5 +92,9 @@ public class Consumer {
 
     public int unreadMessages() {
         return getTopicSize() - getLastReadMessage();
+    }
+
+    public void rollback(){
+        subscriber.zincrby(-1, id);
     }
 }

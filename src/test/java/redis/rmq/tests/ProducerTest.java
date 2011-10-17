@@ -162,4 +162,15 @@ public class ProducerTest extends Assert {
 
         assertEquals("2", c.consume());
     }
+
+    @Test
+    public void rollbackOnErrorMessage() {
+        Producer p = new Producer(new Jedis("localhost"), "foo");
+        Consumer c = new Consumer(new Jedis("localhost"), "a subscriber", "foo");
+
+        p.publish("hello world!");
+        assertEquals("hello world!", c.consume());
+        c.rollback();
+        assertEquals("hello world!", c.consume());
+    }
 }
