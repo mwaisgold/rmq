@@ -3,6 +3,8 @@ package redis.rmq;
 import java.util.List;
 import java.util.Set;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.Tuple;
@@ -22,13 +24,19 @@ public class Producer {
         publish(message, 0);
     }
 
+    @Trace(metricName = "RMQ/producer/getNextMessageId")
     protected Integer getNextMessageId() {
+        long start = System.currentTimeMillis();
+
         final String slastMessageId = topic.get();
         Integer lastMessageId = 0;
         if (slastMessageId != null) {
             lastMessageId = Integer.parseInt(slastMessageId);
         }
         lastMessageId++;
+        long diff = System.currentTimeMillis() -start;
+
+        NewRelic.recordResponseTimeMetric("RMQ/producer/getNextMessageIdTime", diff);
         return lastMessageId;
     }
 
@@ -46,7 +54,9 @@ public class Producer {
      * @param seconds
      *            expiry time
      */
+    @Trace(metricName = "RMQ/producer/publish")
     public void publish(String message, int seconds) {
+        long start = System.currentTimeMillis();
         List<Object> exec = null;
         Integer lastMessageId = null;
         do {
@@ -59,6 +69,11 @@ public class Producer {
             if (seconds > 0)
                 trans.expire(msgKey, seconds);
             exec = trans.exec();
+
+            NewRelic.incrementCounter("RMQ/producer/publishIntents");
         } while (exec == null);
+
+        long diff = System.currentTimeMillis() -start;
+        NewRelic.recordResponseTimeMetric("RMQ/producer/publishTime", diff);
     }
 }

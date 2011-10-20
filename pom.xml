@@ -18,6 +18,13 @@
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
+      <dependency>
+          <groupId>new-relic</groupId>
+          <artifactId>new-relic-api</artifactId>
+          <version>2.0.2</version>
+          <scope>system</scope>
+          <systemPath>${basedir}/lib/newrelic-api.jar</systemPath>
+      </dependency>
   </dependencies>
   <build>
     <pluginManagement>
