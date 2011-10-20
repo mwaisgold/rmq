@@ -39,6 +39,14 @@ public class Producer {
         topic.cat("message").cat(lowest).del();
     }
 
+    protected Nest getTopic(){
+        return this.topic;
+    }
+
+    protected Jedis getJedis() {
+        return jedis;
+    }
+
     /**
      * 
      * @param message

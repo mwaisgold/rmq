@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import redis.clients.jedis.Jedis;
@@ -11,6 +12,7 @@ import redis.rmq.Callback;
 import redis.rmq.Consumer;
 import redis.rmq.Producer;
 
+@Ignore
 public class ProducerTest extends Assert {
     @Before
     public void setUp() throws IOException {
